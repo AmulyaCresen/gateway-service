@@ -8,7 +8,9 @@ spring:
     gateway:
       httpclient:
         connect-timeout: 5000
-        response-timeout: 30s
+        response-timeout: 120s
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -36,6 +38,13 @@ spring:
           uri: http://localhost:8082
           predicates:
             - Path=/users/**
+
+        - id: leave-service-route
+          uri: http://localhost:8083
+          predicates:
+            - Path=/leave-service/**
+          filters:
+            - StripPrefix=1
 
         - id: leave-route
           uri: http://localhost:8083

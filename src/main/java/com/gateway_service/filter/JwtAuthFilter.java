@@ -22,7 +22,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             "/auth/login",
             "/auth/forgot-password",
             "/auth/reset-password",
-            "/auth/login-with-otp"
+            "/auth/login-with-otp",
+            "/leave-service/api/chatbot"
     );
 
     @Value("${app.jwt.secret}")
