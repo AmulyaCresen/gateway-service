@@ -1,3 +1,65 @@
+server:
+  port: 8081
+
 spring:
   application:
     name: gateway-service
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 120s
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            exposedHeaders:
+              - "Authorization"
+              - "Content-Type"
+            allowCredentials: false
+            maxAge: 3600
+
+      routes:
+        - id: auth-route
+          uri: http://localhost:8082
+          predicates:
+            - Path=/auth/**
+
+        - id: user-route
+          uri: http://localhost:8082
+          predicates:
+            - Path=/users/**
+
+        - id: leave-service-route
+          uri: http://localhost:8083
+          predicates:
+            - Path=/leave-service/**
+          filters:
+            - StripPrefix=1
+
+        - id: leave-route
+          uri: http://localhost:8083
+          predicates:
+            - Path=/leave/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+app:
+  jwt:
+    secret: "LeaveManagementSystemJWTSecretKey2026MinLength32Chars!"
